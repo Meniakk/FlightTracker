@@ -73,7 +73,7 @@ namespace FlightTracker.Controllers
 
                     Thread serverThread = new Thread(new ParameterizedThreadStart(server.StartServer));
                     serverThread.IsBackground = true;
-                    serverThread.Start(new Tuple<string, int>(FlightServerIP, flightInfoPort));
+                    //serverThread.Start(new Tuple<string, int>(FlightServerIP, flightInfoPort));
                 }
             }
             catch (Exception e)

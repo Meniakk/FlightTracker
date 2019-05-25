@@ -2,12 +2,31 @@
 @{
     ViewBag.Title = "Index";
 }
+<style>
+    html, body {
+        overflow: hidden;
+    }
+
+    body {
+        padding: 0;
+        margin: 0;
+        margin: 0;
+        padding: 0;
+        background-color: ivory;
+    }
+
+    #canvas {
+        position:fixed;
+        top:0;
+        left:0;
+        width: 100vw;
+        height: 100vh;
+    }
+</style>
 
 <div>
-    <canvas id="map" width="200" height="100" style="border:1px solid black;"
-            src="map.png">
-
-    </canvas>
+    <img id="map_pic" src="~/map.png" alt="Italian Trulli" hidden="hidden">
+    <canvas id="map" width="100" height="100"></canvas>
     <h2>DATA:</h2>
     <table>
         <tr>
@@ -38,10 +57,16 @@
     });
     setInterval(myTimer, IntervalTime);
     myTimer();
+</script>
 
-    var img = new Image();
-    img.src = "map.png";
-    var ctx = document.getElementById('map').getContext('2d');
-    ctx.drawImage(img, 10, 10);
+<script>
+    window.onload = function () {
+        var c = document.getElementById("map");
+        c.width = window.innerWidth;
+        c.height = window.innerHeight;
+        var ctx = c.getContext("2d");
+        var img = document.getElementById("map_pic");
 
+        ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, c.width, c.height);
+    }; 
 </script>
