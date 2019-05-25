@@ -15,8 +15,8 @@ namespace FlightTracker
 
             routes.MapRoute(
                 name: "Default",
-                url: "{controller}/{action}/{id}",
-                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
+                url: "{controller}/{action}/{ip}/{port}/{time}",
+                defaults: new { controller = "Home", action = "Index", ip = "127.0.0.1", port = "5400", time = UrlParameter.Optional  }
             );
         }
     }

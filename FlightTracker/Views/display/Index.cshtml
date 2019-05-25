@@ -1,0 +1,47 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<div>
+    <canvas id="map" width="200" height="100" style="border:1px solid black;"
+            src="map.png">
+
+    </canvas>
+    <h2>DATA:</h2>
+    <table>
+        <tr>
+            <td>lng:  </td>
+            <td><p type="text" id="lng" size="5"></p></td>
+        </tr>
+        <tr>
+            <td>lat:  </td>
+            <td><p type="text" id="lat" size="5"></p></td>
+        </tr>
+    </table>
+
+</div>
+
+<script>
+    var IntervalTime = @Session["time"] * 1000
+    myTimer = (function () {
+        $.post( "@Url.Action("GetCord")").done(function (xml) {
+                var xmlDoc = $.parseXML( xml ),
+                $xml = $( xmlDoc ),
+                lat = $xml.find( "lat" ).text();
+                lng = $xml.find( "lng" ).text();
+
+
+                $("#lng").text(lng);
+                $("#lat").text(lat);
+        });
+    });
+    setInterval(myTimer, IntervalTime);
+    myTimer();
+
+    var img = new Image();
+    img.src = "map.png";
+    var ctx = document.getElementById('map').getContext('2d');
+    ctx.drawImage(img, 10, 10);
+
+</script>
