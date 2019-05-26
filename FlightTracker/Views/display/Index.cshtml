@@ -23,10 +23,12 @@
         height: 100vh;
     }
 </style>
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
 
 <div>
-    <img id="map_pic" src="~/map.png" alt="Italian Trulli" hidden="hidden">
-    <canvas id="map" width="100" height="100"></canvas>
+    <canvas id="map" width="0" height="0"></canvas>
+    <img id="map_pic" src="~/map.png" alt="world map" hidden="hidden">
+
     <h2>DATA:</h2>
     <table>
         <tr>
@@ -38,25 +40,84 @@
             <td><p type="text" id="lat" size="5"></p></td>
         </tr>
     </table>
-
 </div>
 
 <script>
     var IntervalTime = @Session["time"] * 1000
+
+    var lastX = null;
+    var lastY = null;
+
     myTimer = (function () {
         $.post( "@Url.Action("GetCord")").done(function (xml) {
                 var xmlDoc = $.parseXML( xml ),
                 $xml = $( xmlDoc ),
                 lat = $xml.find( "lat" ).text();
-                lng = $xml.find( "lng" ).text();
+                lng = $xml.find("lng").text();
 
+            var c = document.getElementById("map");
+            var ctx = c.getContext("2d");
+
+            var aa = parseFloat(lng.valueOf());
+            var aaa = ((aa + 180.0) / (180.0 + 180.0)) * (c.clientWidth);
+            aaa = aaa + Math.random() * (50.0 - 0.0) + 0.0;
+
+            var bb = parseFloat(lat.valueOf());
+            var bbb = ((bb + 90.0) / (90.0 + 90.0)) * (c.clientHeight);
+            bbb = bbb + Math.random() * (50.0 - 0.0) + 0.0;;
+
+            if (lastX == null || lastY == null) {
+                drawArcOnCanvas(aaa, bbb, 10, "#f00000");
+            } else {
+                
+                console.log("Drawing line from (" + (Math.round(lastX * 10) / 10).toString() + "," + (Math.round(lastY * 10) / 10).toString() + ") to (" + (Math.round(aaa * 10) / 10).toString() + ", " + (Math.round(bbb * 10) / 10).toString() + ")" );
+                ctx.lineWidth = "10";
+                ctx.strokeStyle = "red";
+                ctx.beginPath();
+                ctx.moveTo((Math.round(lastX * 10) / 10), (Math.round(lastY * 10) / 10));
+                ctx.lineTo((Math.round(aaa * 10) / 10), (Math.round(bbb * 10) / 10));
+                ctx.stroke(); 
+            }
+            lastX = aaa;
+            lastY = bbb;
+            
+
+            $("#lng").text(lng);
+            $("#lat").text(lat);
+        });
+    });
+    if (IntervalTime != 0) {
+        setInterval(myTimer, IntervalTime);
+        myTimer();
+    } else {
+        showPlane = (function () {
+            $.post( "@Url.Action("GetCord")").done(function (xml) {
+                var xmlDoc = $.parseXML(xml),
+                $xml = $(xmlDoc),
+                lat = $xml.find("lat").text();
+                lng = $xml.find("lng").text();
+
+                var c = document.getElementById("map");
+                //debugger;
+
+                var aa = parseFloat(lng.valueOf());
+                var aaa = ((aa + 180.0) / (180.0 + 180.0)) * (c.scrollWidth);
+
+                var bb = parseFloat(lat.valueOf());
+                var bbb = ((bb + 90.0) / (90.0 + 90.0)) * (c.scrollHeight);
+
+                console.log("lng: " + aa + " -> " + (Math.round(aaa * 10) / 10).toString());
+                console.log("lat: " + bb + " -> " + (Math.round(bbb * 10) / 10).toString());
+
+                drawArcOnCanvas(aaa, bbb, 20, "#09298f");
+                drawArcOnCanvas(aaa, bbb, 10, "#f00000");
 
                 $("#lng").text(lng);
                 $("#lat").text(lat);
+            });
         });
-    });
-    setInterval(myTimer, IntervalTime);
-    myTimer();
+        showPlane();
+    }
 </script>
 
 <script>
@@ -65,8 +126,22 @@
         c.width = window.innerWidth;
         c.height = window.innerHeight;
         var ctx = c.getContext("2d");
+        ctx.translate(0, 0);
         var img = document.getElementById("map_pic");
 
         ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, c.width, c.height);
     }; 
+</script>
+
+<script>
+    drawArcOnCanvas = (function (x, y, r, color) {
+        var c = document.getElementById("map");
+        var ctx = c.getContext("2d");
+        console.log("Trying to draw on: " + x.toString() + "," + y.toString() + " of: " + c.clientWidth.toString() + "," + c.clientHeight.toString());
+
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc((Math.round(x * 10) / 10), (Math.round(y * 10) / 10), r, 0, 2 * Math.PI);
+        ctx.fill();
+    });
 </script>

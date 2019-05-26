@@ -19,7 +19,7 @@ namespace FlightTracker.Controllers
         public string GetCord()
         {
             Console.Write("Reading data..");
-            if (Models.DataReaderServer.Instance.isRunning)
+            if (Models.DataWriterClient.Instance.isConnected)
             {
                 StringBuilder sb = new StringBuilder();
                 XmlWriterSettings settings = new XmlWriterSettings();
@@ -28,9 +28,8 @@ namespace FlightTracker.Controllers
                 writer.WriteStartDocument();
 
                 writer.WriteStartElement("DATA");
-                writer.WriteElementString("lat", Models.SymbolTable.Instance.getValueOf("/position/latitude-deg").ToString());
-                writer.WriteElementString("lng", Models.SymbolTable.Instance.getValueOf("/position/longitude-deg").ToString());
-
+                writer.WriteElementString("lat", Models.DataWriterClient.Instance.GetData("get /position/latitude-deg\r\n"));
+                writer.WriteElementString("lng", Models.DataWriterClient.Instance.GetData("get /position/longitude-deg\r\n"));
                 writer.WriteEndElement();
                 writer.WriteEndDocument();
                 writer.Flush();
@@ -43,7 +42,7 @@ namespace FlightTracker.Controllers
 
         // GET: display
         [HttpGet]
-        public ActionResult Index(string ip, int port, int time)
+        public ActionResult Indexx(string ip, int port, int time)
         {
 
             #region Connect to Server
@@ -84,6 +83,35 @@ namespace FlightTracker.Controllers
             #endregion
 
             Console.Write("Reading data..");
+            Session["time"] = time;
+            ViewBag["lastX"] = null;
+            ViewBag["lastY"] = null;
+            return View();
+        }
+
+        [HttpGet]
+        public ActionResult Index(string ip, int port, int time)
+        {
+
+            #region Connect to Client
+
+            DataWriterClient client = DataWriterClient.Instance;
+            bool isClientConnected = client.isConnected;
+
+            if (!client.isConnectedToEndPoint(ip, port))
+            {
+                // If client connected, stop it.
+                if (isClientConnected)
+                {
+                    client.CloseConnection();
+                }
+                // Start client.
+                client.StartClient(ip, port);
+            }
+            // Play Beep when connections are available.
+            System.Media.SystemSounds.Beep.Play();
+            #endregion
+            //GetCord();
             Session["time"] = time;
             return View();
         }
