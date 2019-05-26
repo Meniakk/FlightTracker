@@ -1,6 +1,5 @@
-﻿
-@{
-    ViewBag.Title = "Index";
+﻿@{
+    ViewBag.Title = "Home Page";
 }
 <style>
     html, body {
@@ -16,18 +15,19 @@
     }
 
     #canvas {
-        position:fixed;
-        top:0;
-        left:0;
+        position: fixed;
+        top: 0;
+        left: 0;
         width: 100vw;
         height: 100vh;
     }
 </style>
 <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
 
+
 <div>
     <canvas id="map" width="0" height="0"></canvas>
-    <img id="map_pic" src="~/map.png" alt="world map" hidden="hidden">
+    <img id="map_pic" src="~/Resources/Images/map.png" alt="world map" hidden="hidden">
 
     <h2>DATA:</h2>
     <table>
@@ -43,7 +43,13 @@
 </div>
 
 <script>
-    var IntervalTime = @Session["time"] * 1000
+    var IntervalTime = @Session["time"] * 1000;
+    var connected = @Session["connected"];
+
+    if (connected == 0) {
+        alert("Not Connected to simulator!");
+        throw new Error("Not Connected to simulator!");
+    }
 
     var lastX = null;
     var lastY = null;
@@ -67,20 +73,20 @@
             bbb = bbb + Math.random() * (50.0 - 0.0) + 0.0;;
 
             if (lastX == null || lastY == null) {
-                drawArcOnCanvass(aaa, bbb, 10, "#f00000");
+                drawArcOnCanvas(aaa, bbb, 5, "#f00000");
             } else {
-                
+
                 console.log("Drawing line from (" + (Math.round(lastX * 10) / 10).toString() + "," + (Math.round(lastY * 10) / 10).toString() + ") to (" + (Math.round(aaa * 10) / 10).toString() + ", " + (Math.round(bbb * 10) / 10).toString() + ")" );
                 ctx.lineWidth = "10";
                 ctx.strokeStyle = "red";
                 ctx.beginPath();
                 ctx.moveTo((Math.round(lastX * 10) / 10), (Math.round(lastY * 10) / 10));
                 ctx.lineTo((Math.round(aaa * 10) / 10), (Math.round(bbb * 10) / 10));
-                ctx.stroke(); 
+                ctx.stroke();
             }
             lastX = aaa;
             lastY = bbb;
-            
+
 
             $("#lng").text(lng);
             $("#lat").text(lat);
@@ -129,11 +135,11 @@
         var img = document.getElementById("map_pic");
 
         ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, c.width, c.height);
-    }; 
+    };
 </script>
 
 <script>
-    drawArcOnCanvass = (function (x, y, r, color) {
+    drawArcOnCanvas = (function (x, y, r, color) {
         var c = document.getElementById("map");
         var ctx = c.getContext("2d");
         console.log("Trying to draw on: " + x.toString() + "," + y.toString() + " of: " + c.clientWidth.toString() + "," + c.clientHeight.toString());

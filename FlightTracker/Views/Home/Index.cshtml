@@ -1,31 +1,64 @@
 ﻿@{
     ViewBag.Title = "Home Page";
 }
+<style>
+    body {
+        background-image: url(/Resources/Images/404_1.jpg);
+        background-color: #cccccc;
+        background-position: top;
+        padding: 0;
+        margin: 0;
+        margin: 0;
+        padding: 0;
+    }
+    div {
+        text-align: center;
+    }
+    a {
+        display: inline-block;
+        margin-top:10px;
+        font-family: helvetica;
+        text-decoration: none;
+        font-size: xx-large;
+        background-color: white;
+        color: black;
+    }
+    a:hover {
+        text-decoration: underline;
+        text-decoration-style:wavy;
+    }
+    a:active {
+        color: red;
+    }
+    a:visited {
+        color: black;
+    }
+</style>
 
-<div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-    <p><a href="https://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
-</div>
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
 
-<div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>
-            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
-        </p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
+<body>
+    <div>
+        <a href="~/Display/127.0.0.1/5402">Click Here</a>
     </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-    </div>
-</div>
+    <audio controls id="GB" src="~/Resources/Sounds/Portal_GB.mp3" hidden="hidden"></audio>
+</body>
+
+
+<script>
+    $('a').click(function (e)
+    {
+        console.log("Goodbye");
+        console.log("Redirecting to \"Display/127.0.0.1/5402\"");
+        document.getElementById('GB').play();
+        var ms = 1000;
+        var start = new Date().getTime();
+        var end = start;
+        while (end < start + ms) {
+            end = new Date().getTime();
+        }
+
+
+        return true;
+    });
+</script>

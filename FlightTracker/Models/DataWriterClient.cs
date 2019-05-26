@@ -67,9 +67,17 @@ namespace FlightTracker.Models
 
             // Create a TCP/IP  socket.
             tcpClient = new TcpClient();
-            tcpClient.Connect(iPEndPoint);
-            isConnected = true;
-            tcpClient.NoDelay = true;
+            try
+            {
+                tcpClient.Connect(iPEndPoint);
+                isConnected = true;
+                tcpClient.NoDelay = true;
+            } catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return;
+            }
+            
         }
 
         /// <summary>
