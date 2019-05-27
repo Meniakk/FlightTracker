@@ -9,9 +9,9 @@
     body {
         padding: 0;
         margin: 0;
-        margin: 0;
         padding: 0;
-        background-color: ivory;
+        background-color:gainsboro       
+        /*background-image: url("../../Resources/Images/map.png");*/
     }
 
     #canvas {
@@ -24,23 +24,27 @@
 </style>
 <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
 
+<html>
+<body style="background-size:100% 100%; background-attachment:fixed" >
 
-<div>
-    <canvas id="map" width="0" height="0"></canvas>
-    <img id="map_pic" src="~/Resources/Images/map.png" alt="world map" hidden="hidden">
+        <canvas id="map" width="0" height="0"></canvas>
+        <img id="map_pic" src="~/Resources/Images/map.png" alt="world map" hidden="hidden">
 
-    <h2>DATA:</h2>
-    <table>
-        <tr>
-            <td>lng:  </td>
-            <td><p type="text" id="lng" size="5"></p></td>
-        </tr>
-        <tr>
-            <td>lat:  </td>
-            <td><p type="text" id="lat" size="5"></p></td>
-        </tr>
-    </table>
-</div>
+        <h2>DATA:</h2>
+        <table>
+            <tr>
+                <td>lng:  </td>
+                <td><p type="text" id="lng" size="5"></p></td>
+            </tr>
+            <tr>
+                <td>lat:  </td>
+                <td><p type="text" id="lat" size="5"></p></td>
+            </tr>
+        </table>
+</body>
+</html>
+
+
 
 <script>
     var IntervalTime = @Session["time"] * 1000;
@@ -65,13 +69,11 @@
             var ctx = c.getContext("2d");
 
             var aa = parseFloat(lng.valueOf());
-            var aaa = ((aa + 180.0) / (180.0 + 180.0)) * (c.clientWidth);
-            aaa = aaa + Math.random() * (50.0 - 0.0) + 0.0;
+            var aaa = ((aa + 170.0) * (c.width / 360.0));
 
             var bb = parseFloat(lat.valueOf());
-            var bbb = ((bb + 90.0) / (90.0 + 90.0)) * (c.clientHeight);
-            bbb = bbb + Math.random() * (50.0 - 0.0) + 0.0;;
-
+            var bbb = ((bb + 50.0) * (c.height / 180.0));
+      
             if (lastX == null || lastY == null) {
                 drawArcOnCanvas(aaa, bbb, 5, "#f00000");
             } else {
@@ -106,16 +108,18 @@
                 var c = document.getElementById("map");
 
                 var aa = parseFloat(lng.valueOf());
-                var aaa = ((aa + 180.0) / (180.0 + 180.0)) * (c.scrollWidth);
+                //var aaa = ((aa + 180.0) / 360.0) * (c.scrollWidth);
+                var aaa = ((aa + 170.0) * (c.width / 360.0));
 
                 var bb = parseFloat(lat.valueOf());
-                var bbb = ((bb + 90.0) / (90.0 + 90.0)) * (c.scrollHeight);
+                //var bbb = ((bb + 90.0) / 180.0) * (c.scrollHeight);
+                var bbb = ((bb + 50.0) * (c.height / 180.0)) ;
 
-                console.log("lng: " + aa + " -> " + (Math.round(aaa * 10) / 10).toString());
-                console.log("lat: " + bb + " -> " + (Math.round(bbb * 10) / 10).toString());
+                console.log("lng: " + aa + " -> " + (Math.round(aaa)).toString());
+                console.log("lat: " + bb + " -> " + (Math.round(bbb)).toString());
 
-                drawArcOnCanvas(aaa, bbb, 20, "#09298f");
-                drawArcOnCanvas(aaa, bbb, 10, "#f00000");
+                drawArcOnCanvas(aaa, bbb, 10, "#09298f");
+                drawArcOnCanvas(aaa, bbb, 5, "#f00000");
 
                 $("#lng").text(lng);
                 $("#lat").text(lat);
@@ -143,7 +147,6 @@
         var c = document.getElementById("map");
         var ctx = c.getContext("2d");
         console.log("Trying to draw on: " + x.toString() + "," + y.toString() + " of: " + c.clientWidth.toString() + "," + c.clientHeight.toString());
-
         ctx.fillStyle = color;
         ctx.beginPath();
         ctx.arc((Math.round(x * 10) / 10), (Math.round(y * 10) / 10), r, 0, 2 * Math.PI);
