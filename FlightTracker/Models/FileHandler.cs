@@ -9,6 +9,7 @@ namespace FlightTracker.Models
     public class FileHandler
     {
         private static readonly object padlock = new object();
+
         /// <summary>
         /// Saves data to file.
         /// </summary>
@@ -49,7 +50,7 @@ namespace FlightTracker.Models
                     //Open the text file using a stream reader.
                     using (StreamReader sr = new StreamReader(filename + ".txt"))
                     {
-                        //Read the stream to a string, and write the string to the console.
+                        //Read the stream to a string, and write the string to the list.
                         String line = sr.ReadLine();
                         line.Trim(); //To remove \n
                         fileContent.Add(line);

@@ -46,6 +46,16 @@ namespace FlightTracker.Controllers
         [HttpGet]
         public ActionResult Display(string ip, int port, int time)
         {
+            //Check if the first parameter is a valid ip or a filename
+            if (!DataWriterClient.Instance.ValidateIPv4(ip))
+            {
+                FileHandler fileHandler = new FileHandler();
+                List<string> fileContent = fileHandler.readFromFile(ip);
+                Session["fileContent"] = fileContent;
+                Session["time"] = time;
+                return View();
+            }
+
             #region Connect to Client
 
             DataWriterClient client = DataWriterClient.Instance;
@@ -68,6 +78,39 @@ namespace FlightTracker.Controllers
             {
                 Session["connected"] = 0;
             } else
+            {
+                Session["connected"] = 1;
+            }
+
+            Session["time"] = time;
+            return View();
+        }
+
+        //TODO!!!
+        public ActionResult Save(string ip, int port, int interval, int seconds, string filename)
+        {
+            #region Connect to Client
+
+            DataWriterClient client = DataWriterClient.Instance;
+            bool isClientConnected = client.isConnected;
+
+            if (!client.isConnectedToEndPoint(ip, port))
+            {
+                // If client connected, stop it.
+                if (isClientConnected)
+                {
+                    client.CloseConnection();
+                }
+                // Start client.
+                client.StartClient(ip, port);
+            }
+
+            #endregion
+            if (!DataWriterClient.Instance.isConnected)
+            {
+                Session["connected"] = 0;
+            }
+            else
             {
                 Session["connected"] = 1;
             }

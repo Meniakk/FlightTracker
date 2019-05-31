@@ -58,36 +58,44 @@
     var lastX = null;
     var lastY = null;
 
-    myTimer = (function () {
+    drawLine = (function () {
         $.post( "@Url.Action("GetCord")").done(function (xml) {
                 var xmlDoc = $.parseXML( xml ),
                 $xml = $( xmlDoc ),
                 lat = $xml.find( "lat" ).text();
                 lng = $xml.find("lng").text();
 
-            var c = document.getElementById("map");
-            var ctx = c.getContext("2d");
+            var map = document.getElementById("map");
+            var context = map.getContext("2d");
 
-            var aa = parseFloat(lng.valueOf());
-            var aaa = ((aa + 170.0) * (c.width / 360.0));
+            var fLongtitude = parseFloat(lng.valueOf());
+            var normLon = ((fLongtitude + 180.0) * (window.innerWidth / 360.0));
 
-            var bb = parseFloat(lat.valueOf());
-            var bbb = ((bb + 50.0) * (c.height / 180.0));
+            var fLantitude = parseFloat(lat.valueOf());
+            var normLat = ((fLantitude + 90.0) * (window.innerHeight / 180.0));
       
             if (lastX == null || lastY == null) {
-                drawArcOnCanvas(aaa, bbb, 5, "#f00000");
+                drawArcOnCanvas(normLon, normLat, 5, "#f00000");
             } else {
 
-                console.log("Drawing line from (" + (Math.round(lastX * 10) / 10).toString() + "," + (Math.round(lastY * 10) / 10).toString() + ") to (" + (Math.round(aaa * 10) / 10).toString() + ", " + (Math.round(bbb * 10) / 10).toString() + ")" );
-                ctx.lineWidth = "10";
-                ctx.strokeStyle = "red";
-                ctx.beginPath();
-                ctx.moveTo((Math.round(lastX * 10) / 10), (Math.round(lastY * 10) / 10));
-                ctx.lineTo((Math.round(aaa * 10) / 10), (Math.round(bbb * 10) / 10));
-                ctx.stroke();
+                console.log("Drawing line from ("
+                    + (Math.round(lastX * 10) / 10).toString()
+                    + ","
+                    + (Math.round(lastY * 10) / 10).toString()
+                    + ") to ("
+                    + (Math.round(normLon * 10) / 10).toString()
+                    + ", "
+                    + (Math.round(normLat * 10) / 10).toString()
+                    + ")");
+                context.lineWidth = "10";
+                context.strokeStyle = "red";
+                context.beginPath();
+                context.moveTo((Math.round(lastX * 10) / 10), (Math.round(lastY * 10) / 10));
+                context.lineTo((Math.round(normLon * 10) / 10), (Math.round(normLat * 10) / 10));
+                context.stroke();
             }
-            lastX = aaa;
-            lastY = bbb;
+            lastX = normLon;
+            lastY = normLat;
 
 
             $("#lng").text(lng);
@@ -95,61 +103,71 @@
         });
     });
     if (IntervalTime != 0) {
-        setInterval(myTimer, IntervalTime);
-        myTimer();
+        setInterval(drawLine, IntervalTime);
+        drawLine();
     } else {
-        showPlane = (function () {
+        drawPoint = (function () {
             $.post( "@Url.Action("GetCord")").done(function (xml) {
                 var xmlDoc = $.parseXML(xml),
                 $xml = $(xmlDoc),
                 lat = $xml.find("lat").text();
                 lng = $xml.find("lng").text();
 
-                var c = document.getElementById("map");
+                var map = document.getElementById("map");
 
-                var aa = parseFloat(lng.valueOf());
+                var fLon = parseFloat(lng.valueOf());
                 //var aaa = ((aa + 180.0) / 360.0) * (c.scrollWidth);
-                var aaa = ((aa + 170.0) * (c.width / 360.0));
+                var normLon = ((fLon + 170.0) * (map.width / 360.0));
 
-                var bb = parseFloat(lat.valueOf());
+                var fLat = parseFloat(lat.valueOf());
                 //var bbb = ((bb + 90.0) / 180.0) * (c.scrollHeight);
-                var bbb = ((bb + 50.0) * (c.height / 180.0)) ;
+                var normLat = ((fLat + 50.0) * (map.height / 180.0)) ;
 
-                console.log("lng: " + aa + " -> " + (Math.round(aaa)).toString());
-                console.log("lat: " + bb + " -> " + (Math.round(bbb)).toString());
+                console.log("lng: " + fLon + " -> " + (Math.round(normLon)).toString());
+                console.log("lat: " + fLat + " -> " + (Math.round(normLat)).toString());
 
-                drawArcOnCanvas(aaa, bbb, 10, "#09298f");
-                drawArcOnCanvas(aaa, bbb, 5, "#f00000");
+                drawArcOnCanvas(normLon, normLat, 10, "#09298f");
+                drawArcOnCanvas(normLon, normLat, 5, "#f00000");
 
                 $("#lng").text(lng);
                 $("#lat").text(lat);
             });
         });
-        showPlane();
+        drawPoint();
+    }
+</script>
+
+<script>
+    var IntervalTime = @Session["time"] * 1000;
+    var fileContent = @Session["fileContent"];
+
+    if (IntervalTime != 0) {
+        setInterval(myTimer, IntervalTime);
+        myTimer();
     }
 </script>
 
 <script>
     window.onload = function () {
-        var c = document.getElementById("map");
-        c.width = window.innerWidth;
-        c.height = window.innerHeight;
-        var ctx = c.getContext("2d");
-        ctx.translate(0, 0);
+        var map = document.getElementById("map");
+        map.width = window.innerWidth;
+        map.height = window.innerHeight;
+        var context = map.getContext("2d");
+        context.translate(0, 0);
         var img = document.getElementById("map_pic");
 
-        ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, c.width, c.height);
+        context.drawImage(img, 0, 0, img.width, img.height, 0, 0, map.width, map.height);
     };
 </script>
 
 <script>
     drawArcOnCanvas = (function (x, y, r, color) {
-        var c = document.getElementById("map");
-        var ctx = c.getContext("2d");
-        console.log("Trying to draw on: " + x.toString() + "," + y.toString() + " of: " + c.clientWidth.toString() + "," + c.clientHeight.toString());
-        ctx.fillStyle = color;
-        ctx.beginPath();
-        ctx.arc((Math.round(x * 10) / 10), (Math.round(y * 10) / 10), r, 0, 2 * Math.PI);
-        ctx.fill();
+        var map = document.getElementById("map");
+        var context = map.getContext("2d");
+        console.log("Trying to draw on: " + x.toString() + "," + y.toString() + " of: " + map.clientWidth.toString() + "," + map.clientHeight.toString());
+        context.fillStyle = color;
+        context.beginPath();
+        context.arc((Math.round(x * 10) / 10), (Math.round(y * 10) / 10), r, 0, 2 * Math.PI);
+        context.fill();
     });
 </script>

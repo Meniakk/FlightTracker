@@ -126,6 +126,7 @@
     </Compile>
     <Compile Include="Models\DataReaderServer.cs" />
     <Compile Include="Models\DataWriterClient.cs" />
+    <Compile Include="Models\FileHandler.cs" />
     <Compile Include="Models\SymbolTable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -171,7 +171,7 @@ namespace FlightTracker.Models
             isConnected = false;
         }
 
-        private bool ValidateIPv4(string ip)
+        public bool ValidateIPv4(string ip)
         {
             // Checking we didnt got an empty string.
             if (string.IsNullOrEmpty(ip))
