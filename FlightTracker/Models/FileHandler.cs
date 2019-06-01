@@ -17,13 +17,12 @@ namespace FlightTracker.Models
         /// <param name="data"> the data to be saved. Comes in format: Lon, Lat, Throttle, Rudder </param>
         public void saveToFile(string filename, List<int> data)
         {
-            lock(padlock)
+            lock (padlock)
             {
                 //Write data to file. Will append to the file if it exists, and create a new one if it doesn't
                 for (int i = 0; i < data.Count; ++i)
                 {
-                    using (System.IO.StreamWriter file =
-                new System.IO.StreamWriter(filename + ".txt", true))
+                    using (System.IO.StreamWriter file = new System.IO.StreamWriter(System.AppContext.BaseDirectory + filename, true))
                     {
                         file.WriteLine(data.ElementAt(i) + "\n");
 
@@ -48,7 +47,7 @@ namespace FlightTracker.Models
                 {
                     fileContent = new List<string>();
                     //Open the text file using a stream reader.
-                    using (StreamReader sr = new StreamReader("C:\\Users\\avish\\Projects\\GitHub\\FlightTracker\\"+ filename)) //TODOOOOO
+                    using (StreamReader sr = new StreamReader(System.AppContext.BaseDirectory + filename))
                     {
                         String line = null;
                         while ((line = sr.ReadLine()) != null)

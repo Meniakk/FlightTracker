@@ -28,6 +28,8 @@ namespace FlightTracker.Controllers
                 writer.WriteStartElement("DATA");
                 writer.WriteElementString("lat", Models.DataWriterClient.Instance.GetData("get /position/latitude-deg\r\n"));
                 writer.WriteElementString("lng", Models.DataWriterClient.Instance.GetData("get /position/longitude-deg\r\n"));
+                writer.WriteElementString("throttle", Models.DataWriterClient.Instance.GetData("get /controls/engines/current-engine/throttle\r\n"));
+                writer.WriteElementString("rudder", Models.DataWriterClient.Instance.GetData("get /controls/flight/rudder\r\n"));
                 writer.WriteEndElement();
                 writer.WriteEndDocument();
                 writer.Flush();
@@ -87,9 +89,9 @@ namespace FlightTracker.Controllers
             Session["time"] = time;
             return View();
         }
-
-        //TODO!!!
-        public ActionResult Save(string ip, int port, int interval, int seconds, string filename)
+        
+        [HttpGet]
+        public ActionResult Save(string ip, int port, int time, int period, string filename)
         {
             #region Connect to Client
 
@@ -117,8 +119,30 @@ namespace FlightTracker.Controllers
                 Session["connected"] = 1;
             }
 
-            //Session["time"] = time;
+            Session["time"] = time;
+            Session["period"] = period;
+            Session["filename"] = filename;
             return View();
+        }
+
+        [HttpPost]
+        public void WriteToFile(string ip, int port, int time, int period, string filename)
+        {
+            //???
+            int lat = port;
+            int lon = time;
+            int throttle = period;
+            int rudder = int.Parse(filename);
+            filename = ip;
+
+            List<int> parameters = new List<int>();
+            parameters.Add(lat);
+            parameters.Add(lon);
+            parameters.Add(throttle);
+            parameters.Add(rudder);
+
+            FileHandler fileHandler = new FileHandler();
+            fileHandler.saveToFile(filename, parameters);
         }
 
         /*
