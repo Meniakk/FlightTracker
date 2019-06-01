@@ -51,7 +51,8 @@ namespace FlightTracker.Controllers
             {
                 FileHandler fileHandler = new FileHandler();
                 List<string> fileContent = fileHandler.readFromFile(ip);
-                Session["fileContent"] = fileContent;
+                ViewBag.data = fileContent;
+                Session["fileContent"] = 1;
                 Session["time"] = time;
                 return View();
             }
@@ -115,7 +116,7 @@ namespace FlightTracker.Controllers
                 Session["connected"] = 1;
             }
 
-            Session["time"] = time;
+            //Session["time"] = time;
             return View();
         }
 

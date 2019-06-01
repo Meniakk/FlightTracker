@@ -97,7 +97,6 @@
             lastX = normLon;
             lastY = normLat;
 
-
             $("#lng").text(lng);
             $("#lat").text(lat);
         });
@@ -138,13 +137,93 @@
 </script>
 
 <script>
-    var IntervalTime = @Session["time"] * 1000;
-    var fileContent = @Session["fileContent"];
-
-    if (IntervalTime != 0) {
-        setInterval(myTimer, IntervalTime);
-        myTimer();
+    var data = @ViewBag.data;
+    if (data == null)
+    {
+        return;
     }
+
+    var IntervalTime = @Session["time"] * 1000;
+    
+    var l = @(ViewBag.data);
+    var content;
+    var fileContent = Array();
+
+    //convert the c# list of lon and lat to a javascript array
+    for (content in l)
+    {
+        fileContent.push(content);
+    }
+
+    var lastX = null;
+    var lastY = null;
+    var longtitude = null;
+    var latitude = null;
+
+    //Draws a line from one point to another using the lon and lat values
+    drawLineFromFile = (function () {
+        var map = document.getElementById("map");
+        var context = map.getContext("2d");
+        
+        var normLon = ((longtitude + 180.0) * (window.innerWidth / 360.0));
+        
+        var normLat = ((latitude + 90.0) * (window.innerHeight / 180.0));
+
+        if (lastX == null || lastY == null) {
+            drawArcOnCanvas(normLon, normLat, 5, "#f00000");
+        } else {
+            console.log("Drawing line from ("
+                + (Math.round(lastX * 10) / 10).toString()
+                + ","
+                + (Math.round(lastY * 10) / 10).toString()
+                + ") to ("
+                + (Math.round(normLon * 10) / 10).toString()
+                + ", "
+                + (Math.round(normLat * 10) / 10).toString()
+                + ")");
+            context.lineWidth = "10";
+            context.strokeStyle = "red";
+            context.beginPath();
+            context.moveTo((Math.round(lastX * 10) / 10), (Math.round(lastY * 10) / 10));
+            context.lineTo((Math.round(normLon * 10) / 10), (Math.round(normLat * 10) / 10));
+            context.stroke();
+        }
+        lastX = normLon;
+        lastY = normLat;
+    });
+
+    drawPointFromFile = (function () {
+        var map = document.getElementById("map");
+
+        var normLon = ((longtitude + 170.0) * (map.width / 360.0));
+
+        var normLat = ((latitude + 50.0) * (map.height / 180.0));
+
+        console.log("lng: " + fLon + " -> " + (Math.round(normLon)).toString());
+        console.log("lat: " + fLat + " -> " + (Math.round(normLat)).toString());
+
+        drawArcOnCanvas(normLon, normLat, 10, "#09298f");
+        drawArcOnCanvas(normLon, normLat, 5, "#f00000");
+    });
+
+    //iterate on the array and draw
+    var i = 0;
+    var interval = null;
+    drawAll = (function () {
+        longtitude = fileContent[i * 5];
+        latitude = fileContent[i * 5 + 1];
+        
+        if (i == fileContent.length / 5) {
+            clearInterval(interval);
+            drawPointFromFile();
+        } else {
+            drawLineFromFile();
+            i++;
+        }
+    });
+
+    interval = setInterval(drawAll, IntervalTime);
+    var index = 0;
 </script>
 
 <script>

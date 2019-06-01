@@ -48,12 +48,14 @@ namespace FlightTracker.Models
                 {
                     fileContent = new List<string>();
                     //Open the text file using a stream reader.
-                    using (StreamReader sr = new StreamReader(filename + ".txt"))
+                    using (StreamReader sr = new StreamReader("C:\\Users\\avish\\Projects\\GitHub\\FlightTracker\\"+ filename)) //TODOOOOO
                     {
-                        //Read the stream to a string, and write the string to the list.
-                        String line = sr.ReadLine();
-                        line.Trim(); //To remove \n
-                        fileContent.Add(line);
+                        String line = null;
+                        while ((line = sr.ReadLine()) != null)
+                        {
+                            line.Trim(); //To remove \n
+                            fileContent.Add(line);
+                        }
                     }
                 }
                 catch (IOException e)
