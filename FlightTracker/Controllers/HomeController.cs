@@ -53,7 +53,8 @@ namespace FlightTracker.Controllers
                 List<string> fileContent = fileHandler.readFromFile(ip);
                 ViewBag.data = fileContent;
                 Session["fileContent"] = 1;
-                Session["time"] = time;
+                Session["time"] = port;
+                Session["connected"] = 0;
                 return View();
             }
 
