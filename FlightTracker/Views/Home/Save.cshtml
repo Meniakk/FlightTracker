@@ -48,9 +48,8 @@
 
 <script>
     var IntervalTime = @Session["time"] * 1000;
+    var PeriodTime = @Session["Period"] * 1000;
     var connected = @Session["connected"];
-    var period = @Session["period"];
-    var filename = "@Session["filename"]";
 
     if (connected == 0) {
         alert("Not Connected to simulator!");
@@ -59,10 +58,13 @@
 
     var lastX = null;
     var lastY = null;
-    var timer = 0;
+
+    // Calculate how many times should the intervals happen
+    var times = floor(PeriodTime / IntervalTime);
+    var counter = 0;
 
     drawLine = (function () {
-        $.post( "@Url.Action("GetCord")").done(function (xml) {
+        $.post( "@Url.Action("Save")").done(function (xml) {
             var xmlDoc = $.parseXML( xml ),
             $xml = $( xmlDoc ),
             lat = $xml.find("lat").text();
@@ -100,59 +102,19 @@
             lastX = normLon;
             lastY = normLat;
 
-            //All values should be saved to the file
-            var throttle = $xml.find("throttle");
-            var rudder = $xml.find("rudder");
-
-            $.post("@Url.Action("WriteToFile")/" + filename + "/" + lon + "/" + lat + "/" + throttle + "/" + rudder);
-
             $("#lng").text(lng);
             $("#lat").text(lat);
         });
     });
-    var startTime = new Date();
-    if (IntervalTime != 0) {
-        var current = new Date();
-        var waitingTime = period * 1000;
-        while ((current - startTime) < waitingTime) {
-            setInterval(drawLine, IntervalTime);
-            drawLine();
-            current = new Date();
-        }
+    if (IntervalTime != 0 && counter < times) {
+        setInterval(drawLine, IntervalTime);
+        drawLine();
+        ++counter;
     } else {
-        drawPoint = (function () {
-            $.post( "@Url.Action("GetCord")").done(function (xml) {
-                var xmlDoc = $.parseXML(xml),
-                $xml = $(xmlDoc),
-                lat = $xml.find("lat").text();
-                lng = $xml.find("lng").text();
-
-                var map = document.getElementById("map");
-
-                var fLon = parseFloat(lng.valueOf());
-                var normLon = ((fLon + 170.0) * (map.width / 360.0));
-
-                var fLat = parseFloat(lat.valueOf());
-                var normLat = ((fLat + 50.0) * (map.height / 180.0)) ;
-
-                console.log("lng: " + fLon + " -> " + (Math.round(normLon)).toString());
-                console.log("lat: " + fLat + " -> " + (Math.round(normLat)).toString());
-
-                drawArcOnCanvas(normLon, normLat, 10, "#09298f");
-                drawArcOnCanvas(normLon, normLat, 5, "#f00000");
-
-                //All values should be saved to the file
-                var throttle = $xml.find("throttle");
-                var rudder = $xml.find("rudder");
-
-                $.post("@Url.Action("WriteToFile")/" + filename + "/" + lon + "/" + lat + "/" + throttle + "/" + rudder);
-
-                $("#lng").text(lng);
-                $("#lat").text(lat);
-            });
-        });
-        drawPoint();
+        alert("Didn't get interval!");
+        throw new Error("Didn't get interval!");
     }
+    
 </script>
 
 <script>

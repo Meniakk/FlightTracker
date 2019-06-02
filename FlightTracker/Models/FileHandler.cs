@@ -8,14 +8,34 @@ namespace FlightTracker.Models
 {
     public class FileHandler
     {
+        private static FileHandler instance;
         private static readonly object padlock = new object();
+
+        private string filename;
+
+        private FileHandler(string name) { instance.filename = name; }
+
+        public static FileHandler Instance(string name)
+        {
+            if (instance == null)
+            {
+                lock (padlock)
+                {
+                    if (instance == null)
+                    {
+                        instance = new FileHandler(name);
+                    }
+                }
+            }
+            return instance;
+        }
 
         /// <summary>
         /// Saves data to file.
         /// </summary>
         /// <param name="filename"> the name of the file. </param>
         /// <param name="data"> the data to be saved. Comes in format: Lon, Lat, Throttle, Rudder </param>
-        public void saveToFile(string filename, List<int> data)
+        public void saveToFile(List<float> data)
         {
             lock (padlock)
             {
@@ -38,7 +58,7 @@ namespace FlightTracker.Models
         /// </summary>
         /// <param name="filename"> the file to read from </param>
         /// <returns> a list containing all seperate lines. </returns>
-        public List<string> readFromFile(string filename)
+        public List<string> readFromFile()
         {
             List<string> fileContent = null;
             lock (padlock)

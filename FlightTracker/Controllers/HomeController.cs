@@ -51,8 +51,7 @@ namespace FlightTracker.Controllers
             //Check if the first parameter is a valid ip or a filename
             if (!DataWriterClient.Instance.ValidateIPv4(ip))
             {
-                FileHandler fileHandler = new FileHandler();
-                List<string> fileContent = fileHandler.readFromFile(ip);
+                List<string> fileContent = FileHandler.Instance(ip).readFromFile();
                 ViewBag.data = fileContent;
                 Session["fileContent"] = 1;
                 Session["time"] = port;
@@ -90,7 +89,7 @@ namespace FlightTracker.Controllers
             return View();
         }
         
-        [HttpGet]
+        [HttpPost]
         public ActionResult Save(string ip, int port, int time, int period, string filename)
         {
             #region Connect to Client
@@ -110,39 +109,37 @@ namespace FlightTracker.Controllers
             }
 
             #endregion
-            if (!DataWriterClient.Instance.isConnected)
-            {
-                Session["connected"] = 0;
-            }
-            else
-            {
-                Session["connected"] = 1;
-            }
 
             Session["time"] = time;
             Session["period"] = period;
             Session["filename"] = filename;
+
+            if (DataWriterClient.Instance.isConnected)
+            {
+                Session["connected"] = 1;
+
+                // Get all values needed
+                float lat = Convert.ToSingle(DataWriterClient.Instance.GetData("get /position/latitude-deg\r\n"));
+                float lon = Convert.ToSingle(DataWriterClient.Instance.GetData("get /position/longitude-deg\r\n"));
+                float throttle = Convert.ToSingle(DataWriterClient.Instance.GetData("get /controls/engines/current-engine/throttle\r\n"));
+                float rudder = Convert.ToSingle(DataWriterClient.Instance.GetData("get /controls/flight/rudder\r\n"));
+
+                // Write to file
+                List<float> values = new List<float>();
+                values.Add(lat);
+                values.Add(lon);
+                values.Add(throttle);
+                values.Add(rudder);
+
+                FileHandler.Instance(filename).saveToFile(values);
+            }
+            else
+            {
+                Session["connected"] = 0;
+            }
+
+            
             return View();
-        }
-
-        [HttpPost]
-        public void WriteToFile(string ip, int port, int time, int period, string filename)
-        {
-            //???
-            int lat = port;
-            int lon = time;
-            int throttle = period;
-            int rudder = int.Parse(filename);
-            filename = ip;
-
-            List<int> parameters = new List<int>();
-            parameters.Add(lat);
-            parameters.Add(lon);
-            parameters.Add(throttle);
-            parameters.Add(rudder);
-
-            FileHandler fileHandler = new FileHandler();
-            fileHandler.saveToFile(filename, parameters);
         }
 
         /*
