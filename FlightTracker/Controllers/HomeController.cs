@@ -88,8 +88,30 @@ namespace FlightTracker.Controllers
             Session["time"] = time;
             return View();
         }
-        
+
         [HttpPost]
+        public void SaveData(string filename)
+        {
+            if (DataWriterClient.Instance.isConnected)
+            {
+                // Get all values needed
+                float lat = Convert.ToSingle(DataWriterClient.Instance.GetData("get /position/latitude-deg\r\n"));
+                float lon = Convert.ToSingle(DataWriterClient.Instance.GetData("get /position/longitude-deg\r\n"));
+                float throttle = Convert.ToSingle(DataWriterClient.Instance.GetData("get /controls/engines/current-engine/throttle\r\n"));
+                float rudder = Convert.ToSingle(DataWriterClient.Instance.GetData("get /controls/flight/rudder\r\n"));
+
+                // Write to file
+                List<float> values = new List<float>();
+                values.Add(lat);
+                values.Add(lon);
+                values.Add(throttle);
+                values.Add(rudder);
+
+                FileHandler.Instance(filename).saveToFile(values);
+            }
+        }
+        
+        [HttpGet]
         public ActionResult Save(string ip, int port, int time, int period, string filename)
         {
             #region Connect to Client
@@ -117,21 +139,6 @@ namespace FlightTracker.Controllers
             if (DataWriterClient.Instance.isConnected)
             {
                 Session["connected"] = 1;
-
-                // Get all values needed
-                float lat = Convert.ToSingle(DataWriterClient.Instance.GetData("get /position/latitude-deg\r\n"));
-                float lon = Convert.ToSingle(DataWriterClient.Instance.GetData("get /position/longitude-deg\r\n"));
-                float throttle = Convert.ToSingle(DataWriterClient.Instance.GetData("get /controls/engines/current-engine/throttle\r\n"));
-                float rudder = Convert.ToSingle(DataWriterClient.Instance.GetData("get /controls/flight/rudder\r\n"));
-
-                // Write to file
-                List<float> values = new List<float>();
-                values.Add(lat);
-                values.Add(lon);
-                values.Add(throttle);
-                values.Add(rudder);
-
-                FileHandler.Instance(filename).saveToFile(values);
             }
             else
             {

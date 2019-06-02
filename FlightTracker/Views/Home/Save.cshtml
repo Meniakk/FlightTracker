@@ -60,11 +60,11 @@
     var lastY = null;
 
     // Calculate how many times should the intervals happen
-    var times = floor(PeriodTime / IntervalTime);
+    var times = Math.floor(PeriodTime / IntervalTime);
     var counter = 0;
 
     drawLine = (function () {
-        $.post( "@Url.Action("Save")").done(function (xml) {
+        $.post( "@Url.Action("SaveData", "HomeController", new { filename = Session["filename"] })").done(function (xml) {
             var xmlDoc = $.parseXML( xml ),
             $xml = $( xmlDoc ),
             lat = $xml.find("lat").text();
