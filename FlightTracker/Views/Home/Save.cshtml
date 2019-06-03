@@ -64,7 +64,7 @@
     var counter = 0;
 
     drawLine = (function () {
-        $.post( "@Url.Action("SaveData", "HomeController", new { filename = Session["filename"] })").done(function (xml) {
+        $.post( "@Url.Action("SaveData", new { filename = Session["filename"] })").done(function (xml) {
             var xmlDoc = $.parseXML( xml ),
             $xml = $( xmlDoc ),
             lat = $xml.find("lat").text();
@@ -104,13 +104,13 @@
 
             $("#lng").text(lng);
             $("#lat").text(lat);
+            counter++;
         });
     });
     if (IntervalTime != 0 && counter < times) {
         setInterval(drawLine, IntervalTime);
         drawLine();
-        ++counter;
-    } else {
+    } else if (IntervalTime == 0) {
         alert("Didn't get interval!");
         throw new Error("Didn't get interval!");
     }
