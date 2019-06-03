@@ -13,7 +13,7 @@ namespace FlightTracker.Models
 
         private string filename;
 
-        private FileHandler(string name) { instance.filename = name; }
+        private FileHandler(string name) { this.filename = name; }
 
         public static FileHandler Instance(string name)
         {
@@ -40,15 +40,15 @@ namespace FlightTracker.Models
             lock (padlock)
             {
                 //Write data to file. Will append to the file if it exists, and create a new one if it doesn't
-                for (int i = 0; i < data.Count; ++i)
+                using (System.IO.StreamWriter file = new System.IO.StreamWriter(System.AppContext.BaseDirectory + filename, true))
                 {
-                    using (System.IO.StreamWriter file = new System.IO.StreamWriter(System.AppContext.BaseDirectory + filename, true))
+                    for (int i = 0; i < data.Count; ++i)
                     {
                         file.WriteLine(data.ElementAt(i) + "\n");
-
-                        //If all data was written, write a token.
-                        file.WriteLine("$\n");
                     }
+
+                    //All data was written, write a token.
+                    file.WriteLine("$\n");
                 }
             }
         }
@@ -73,7 +73,11 @@ namespace FlightTracker.Models
                         while ((line = sr.ReadLine()) != null)
                         {
                             line.Trim(); //To remove \n
-                            fileContent.Add(line);
+                            if (line != "")
+                            {
+                                fileContent.Add(line);
+                            }
+                            
                         }
                     }
                 }
