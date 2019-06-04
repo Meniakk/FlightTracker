@@ -102,18 +102,11 @@
                 var normLat = ((fLantitude + 90.0) * (window.innerHeight / 180.0));
 
                 if (lastX == null || lastY == null) {
+
+                    drawArcOnCanvas(normLon, normLat, 10, "#09298f");
                     drawArcOnCanvas(normLon, normLat, 5, "#f00000");
                 } else {
 
-                    console.log("Drawing line from ("
-                        + (Math.round(lastX * 10) / 10).toString()
-                        + ","
-                        + (Math.round(lastY * 10) / 10).toString()
-                        + ") to ("
-                        + (Math.round(normLon * 10) / 10).toString()
-                        + ", "
-                        + (Math.round(normLat * 10) / 10).toString()
-                        + ")");
                     context.lineWidth = "10";
                     context.strokeStyle = "red";
                     context.beginPath();
@@ -147,9 +140,6 @@
                     var fLantitude = parseFloat(lat.valueOf());
                     var normLat = ((fLantitude + 90.0) * (window.innerHeight / 180.0));
 
-                    console.log("lng: " + fLongtitude + " -> " + (Math.round(normLon)).toString());
-                    console.log("lat: " + fLantitude + " -> " + (Math.round(normLat)).toString());
-
                     drawArcOnCanvas(normLon, normLat, 10, "#09298f");
                     drawArcOnCanvas(normLon, normLat, 5, "#f00000");
 
@@ -162,13 +152,9 @@
     }
 
     //read from file
-    @if (ViewBag.data != null && ViewBag != null)
+    @if (ViewBag.data != null)
     {
         <text>
-        if (fromFileContent == 0) {
-            alert("Error in file content");
-            throw new Error("Error in file content");
-        }
 
         var fileContent = Array();
 
@@ -181,6 +167,7 @@
 
         //Draws a line from one point to another using the lon and lat values
         drawLineFromFile = (function (longtitude, latitude) {
+
             var map = document.getElementById("map");
             var context = map.getContext("2d");
 
@@ -191,17 +178,12 @@
             var normLat = ((latitude + 90.0) * (window.innerHeight / 180.0));
             
             if (lastX == null || lastY == null) {
+
+                drawArcOnCanvas(normLon, normLat, 10, "#09298f");
                 drawArcOnCanvas(normLon, normLat, 5, "#f00000");
             } else {
-                console.log("Drawing line from ("
-                    + (Math.round(lastX * 10) / 10).toString()
-                    + ","
-                    + (Math.round(lastY * 10) / 10).toString()
-                    + ") to ("
-                    + (Math.round(normLon * 10) / 10).toString()
-                    + ", "
-                    + (Math.round(normLat * 10) / 10).toString()
-                    + ")");
+
+
                 context.lineWidth = "10";
                 context.strokeStyle = "red";
                 context.beginPath();
@@ -225,9 +207,6 @@
             var normLon = ((longtitude + 180.0) * (window.innerWidth / 360.0));
             var normLat = ((latitude + 90.0) * (window.innerHeight / 180.0));
 
-            console.log("lng: " + longtitude + " -> " + (Math.round(normLon)).toString());
-            console.log("lat: " + latitude + " -> " + (Math.round(normLat)).toString());
-
             drawArcOnCanvas(normLon, normLat, 10, "#09298f");
             drawArcOnCanvas(normLon, normLat, 5, "#f00000");
 
@@ -245,15 +224,22 @@
             if (i == fileContent.length / 5) {
                 clearInterval(interval);
                 drawPointFromFile(longtitude, latitude);
-                alert("Animation is over");
+                alert("Done reading from file.");
             } else {
                 drawLineFromFile(longtitude, latitude);
                 i++;
             }
         });
 
-        interval = setInterval(drawAll, IntervalTime);
+    interval = setInterval(drawAll, IntervalTime);
+    </text>
+
+    } else if ((int)Session["fileContent"] == 1) {
+    <text>
+        alert("Error in reading from file.");
+        throw new Error("Error in file content");
     </text>
     }
+
 
 </script>

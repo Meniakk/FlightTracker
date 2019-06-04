@@ -52,6 +52,7 @@ namespace FlightTracker.Controllers
             if (!DataWriterClient.Instance.ValidateIPv4(ip))
             {
                 List<string> fileContent = FileHandler.Instance(ip).readFromFile();
+
                 ViewBag.data = fileContent;
                 Session["fileContent"] = 1;
                 Session["time"] = port;
@@ -138,30 +139,41 @@ namespace FlightTracker.Controllers
             DataWriterClient client = DataWriterClient.Instance;
             bool isClientConnected = client.isConnected;
 
+
             if (!client.isConnectedToEndPoint(ip, port))
-            {
-                // If client connected, stop it.
-                if (isClientConnected)
                 {
-                    client.CloseConnection();
+
+                    // If client connected, stop it.
+                    if (isClientConnected)
+                    {
+                        client.CloseConnection();
+                    }
+                    // Start client.
+                    client.StartClient(ip, port);
                 }
-                // Start client.
-                client.StartClient(ip, port);
-            }
+           
 
             #endregion
 
             Session["time"] = time;
             Session["period"] = period;
-            Session["filename"] = filename;
 
-            if (DataWriterClient.Instance.isConnected)
+            if (filename.Equals("")) {
+                throw new Exception("No file name.");
+            } else
             {
-                Session["connected"] = 1;
+                Session["filename"] = filename;
+            }
+
+
+
+            if (!DataWriterClient.Instance.isConnected)
+            {
+                Session["connected"] = 0;
             }
             else
             {
-                Session["connected"] = 0;
+                Session["connected"] = 1;
             }
 
             

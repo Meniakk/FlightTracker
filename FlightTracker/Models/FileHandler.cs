@@ -27,6 +27,19 @@ namespace FlightTracker.Models
                     }
                 }
             }
+            else
+            {
+                if (instance.filename != name)
+                {
+                    lock (padlock)
+                    {
+                        if (instance.filename != name)
+                        {
+                            instance = new FileHandler(name);
+                        }
+                    }
+                }
+            }
             return instance;
         }
 
@@ -85,6 +98,7 @@ namespace FlightTracker.Models
                 {
                     Console.WriteLine("The file could not be read:");
                     Console.WriteLine(e.Message);
+                    return null;
                 }
             }
 

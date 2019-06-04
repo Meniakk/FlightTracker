@@ -52,7 +52,7 @@
     var connected = @Session["connected"];
     var finished = 0;
 
-    if (connected == 0) {
+    if (connected == 0 ) {
         alert("Not Connected to simulator!");
         throw new Error("Not Connected to simulator!");
     }
@@ -125,6 +125,7 @@
             var normLat = ((fLantitude + 90.0) * (window.innerHeight / 180.0));
 
             if (lastX == null || lastY == null) {
+                drawArcOnCanvas(normLon, normLat, 10, "#09298f");
                 drawArcOnCanvas(normLon, normLat, 5, "#f00000");
             } else {
 
