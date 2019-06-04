@@ -141,16 +141,14 @@
 
                     var map = document.getElementById("map");
 
-                    var fLon = parseFloat(lng.valueOf());
-                    //var aaa = ((aa + 180.0) / 360.0) * (c.scrollWidth);
-                    var normLon = ((fLon + 170.0) * (map.width / 360.0));
+                    var fLongtitude = parseFloat(lng.valueOf());
+                    var normLon = ((fLongtitude + 180.0) * (window.innerWidth / 360.0));
 
-                    var fLat = parseFloat(lat.valueOf());
-                    //var bbb = ((bb + 90.0) / 180.0) * (c.scrollHeight);
-                    var normLat = ((fLat + 50.0) * (map.height / 180.0)) ;
+                    var fLantitude = parseFloat(lat.valueOf());
+                    var normLat = ((fLantitude + 90.0) * (window.innerHeight / 180.0));
 
-                    console.log("lng: " + fLon + " -> " + (Math.round(normLon)).toString());
-                    console.log("lat: " + fLat + " -> " + (Math.round(normLat)).toString());
+                    console.log("lng: " + fLongtitude + " -> " + (Math.round(normLon)).toString());
+                    console.log("lat: " + fLantitude + " -> " + (Math.round(normLat)).toString());
 
                     drawArcOnCanvas(normLon, normLat, 10, "#09298f");
                     drawArcOnCanvas(normLon, normLat, 5, "#f00000");
@@ -188,10 +186,8 @@
 
             longtitude = parseFloat(longtitude);
             latitude = parseFloat(latitude);
-
+            
             var normLon = ((longtitude + 180.0) * (window.innerWidth / 360.0));
-            console.log(longtitude);
-            console.log(latitude);
             var normLat = ((latitude + 90.0) * (window.innerHeight / 180.0));
             
             if (lastX == null || lastY == null) {
@@ -223,13 +219,12 @@
         drawPointFromFile = (function (longtitude, latitude) {
             var map = document.getElementById("map");
 
-            longtitude = parseFloat(longtitude);
+            fLongtitude = parseFloat(longtitude);
             latitude = parseFloat(latitude);
 
-            var normLon = ((longtitude + 170.0) * (map.width / 360.0));
-            console.log(longtitude);
-            var normLat = ((latitude + 50.0) * (map.height / 180.0));
-            console.log(latitude);
+            var normLon = ((longtitude + 180.0) * (window.innerWidth / 360.0));
+            var normLat = ((latitude + 90.0) * (window.innerHeight / 180.0));
+
             console.log("lng: " + longtitude + " -> " + (Math.round(normLon)).toString());
             console.log("lat: " + latitude + " -> " + (Math.round(normLat)).toString());
 
